@@ -6,10 +6,10 @@
 We have been assigned one customer and two accounts for each bank--NYC and CIB. I have affectionatly named them
 Alpha Bank and Beta Bank
 
-|   Bank  | Customer # | Account Name | Accounts | RTN | oAuth Credentials |
-| ------- | ---------- | ------------ | -------- | ---- | --- |
-| NYC Bank (Alpha) | NYCTEAM12 | Jason Davis | NYCTEAM120001,2 |  021000018 | JasonD/Welcome@1 |
-| CIB Bank (Beta) | CIBTEAM12 | Martin Everhart | CIBTEAM120001,2 | 021000020 | MartinE/Welcome@1 |
+|   Bank  | Customer # | Account Name | Accounts | RTN | 
+| ------- | ---------- | ------------ | -------- | ---- |
+| NYC Bank (Alpha) | NYCTEAM12 | Jason Davis | NYCTEAM120001,2 |  021000018 |
+| CIB Bank (Beta) | CIBTEAM12 | Martin Everhart | CIBTEAM120001,2 | 021000020 | 
 
 
 ## Overview
