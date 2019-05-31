@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Map;
 
 @Service
@@ -34,10 +33,9 @@ public class AuthenticationCredentialsService {
 
 	String bearerToken;
 	String refreshToken;
+
 	int expiresIn;
-
 	LocalDateTime lastUpdated;
-
 	RestTemplate restTemplate;
 
 	@Autowired
@@ -49,20 +47,20 @@ public class AuthenticationCredentialsService {
 
 	public String getBearerToken() {
 
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime timeSinceUpdated = now.minusSeconds(expiresIn);
-
-		Duration duration = Duration.between(now, timeSinceUpdated);
-		long difference = Math.abs(duration.toMillis() / 1000);
-
-		logger.debug("lastUpdated: {} Difference: {} Expires In: {}"  ,
-				lastUpdated.toEpochSecond(ZoneOffset.UTC), difference, expiresIn);
-
-		if (lastUpdated == null || difference > expiresIn) {
+		if (shouldUpdate()) {
 			updateTokens();
 		}
-
 		return bearerToken;
+	}
+
+	private boolean shouldUpdate() {
+		if (lastUpdated == null) {
+			return true;
+		}
+		LocalDateTime now = LocalDateTime.now();
+		Duration durationSinceUpdated = Duration.between(lastUpdated, now);
+		long difference = expiresIn - durationSinceUpdated.toMillis() / 1000;
+		return difference < 0;
 	}
 
 	public void updateTokens() {
