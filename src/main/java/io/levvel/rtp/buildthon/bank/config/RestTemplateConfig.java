@@ -26,15 +26,6 @@ public class RestTemplateConfig {
 	private static final Logger logger = LoggerFactory.getLogger(RestTemplateConfig.class);
 
 
-
-/*
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
-*/
-
-
 	@Bean
 	public RestTemplate restTemplate(AuthenticationCredentialsService credentialsService) {
 

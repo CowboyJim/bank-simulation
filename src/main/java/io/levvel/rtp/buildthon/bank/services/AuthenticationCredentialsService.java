@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 
 @Service
@@ -31,6 +34,9 @@ public class AuthenticationCredentialsService {
 
 	String bearerToken;
 	String refreshToken;
+	int expiresIn;
+
+	LocalDateTime lastUpdated;
 
 	RestTemplate restTemplate;
 
@@ -41,12 +47,21 @@ public class AuthenticationCredentialsService {
 		restTemplate = new RestTemplate();
 	}
 
-//	@PostConstruct
-//	public void init() {
-//		this.updateTokens();
-//	}
-
 	public String getBearerToken() {
+
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime timeSinceUpdated = now.minusSeconds(expiresIn);
+
+		Duration duration = Duration.between(now, timeSinceUpdated);
+		long difference = Math.abs(duration.toMillis() / 1000);
+
+		logger.debug("lastUpdated: {} Difference: {} Expires In: {}"  ,
+				lastUpdated.toEpochSecond(ZoneOffset.UTC), difference, expiresIn);
+
+		if (lastUpdated == null || difference > expiresIn) {
+			updateTokens();
+		}
+
 		return bearerToken;
 	}
 
@@ -63,6 +78,8 @@ public class AuthenticationCredentialsService {
 		TokenResponse response = this.getOAuthToken(getTokenRequest());
 		bearerToken = response.getAccessToken();
 		refreshToken = response.getRefreshToken();
+
+		lastUpdated = LocalDateTime.now();
 	}
 
 	/**
@@ -92,6 +109,8 @@ public class AuthenticationCredentialsService {
 					requestEntity, TokenResponse.class);
 
 			resp = response.getBody();
+			expiresIn = resp.getExpires_in() - 20;
+
 			logger.info("getOAuthToken HTTP operationStatus: {}", response.getStatusCode());
 			logger.debug("getOAuthToken result: {}", resp);
 
